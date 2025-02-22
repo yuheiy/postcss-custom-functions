@@ -1,0 +1,22 @@
+{
+	"compilerOptions": {
+		/* Visit https://aka.ms/tsconfig to read more about this file */
+		/* Language and Environment */
+		"target": "ES2022", // Node.js 18
+		"lib": ["ES2022"],
+		"moduleDetection": "force",
+		/* Modules */
+		"module": "Preserve",
+		"moduleResolution": "bundler",
+		"noUncheckedSideEffectImports": true,
+		"forceConsistentCasingInFileNames": true,
+		/* Type Checking */
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"noImplicitReturns": true,
+		"noFallthroughCasesInSwitch": true,
+		"noUncheckedIndexedAccess": true,
+		"noImplicitOverride": true,
+		"noPropertyAccessFromIndexSignature": true
+	}
+}

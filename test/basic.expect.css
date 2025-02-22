@@ -1,0 +1,28 @@
+.computed {
+	/* Optional arguments */
+	box-shadow: 2px 2px var(--shadow-color, black);
+	box-shadow: 2px 2px blue;
+
+	/* Argument types */
+	padding: calc(-1 * 1em);
+	padding: calc(-1 * 1em + 2em);
+	padding: calc(-1 * var(--gap));
+	padding: calc(-1 * calc(1rem + 1px));
+
+	/* Function compositions */
+	padding: calc(-1 * calc(-1 * 1em));
+	padding: calc(-1 * 1em) calc(-1 * 1em);
+
+	/* Multiple arguments */
+	grid-template-columns: repeat(4, 10px [col-start] 250px [col-end]);
+
+	/* Separated list */
+	--list: 10px, 20px;
+}
+
+.invalid {
+	/* Syntax checking */
+	font-size: --negative(,);
+	font-size: --negative(10px,);
+	font-size: --negative(,10px);
+}
