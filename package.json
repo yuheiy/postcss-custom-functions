@@ -1,8 +1,10 @@
 {
 	"name": "@yuheiy/postcss-custom-functions",
-	"version": "0.0.0",
+	"version": "0.1.0",
 	"description": "PostCSS plugin that allows users to define custom functions using JavaScript.",
-	"keywords": ["postcss-plugin"],
+	"keywords": [
+		"postcss-plugin"
+	],
 	"homepage": "https://github.com/yuheiy/postcss-custom-functions",
 	"bugs": {
 		"url": "https://github.com/yuheiy/postcss-custom-functions/issues"
@@ -23,7 +25,9 @@
 	},
 	"main": "./dist/index.cjs",
 	"types": "./dist/index.d.ts",
-	"files": ["dist"],
+	"files": [
+		"dist"
+	],
 	"scripts": {
 		"build": "unbuild",
 		"dev": "unbuild --stub && pnpm run test --watch",
