@@ -73,15 +73,15 @@ Default: `{}`
 
 Define custom functions that can be used in your CSS.
 
-## Tips
+## Recipes
 
 ### Optional arguments with fallback
 
 You can define custom functions with optional arguments and fallback values.
 
 ```js
-function shadow(shadowColor) {
-  return `2px 2px ${shadowColor ? shadowColor : 'var(--shadow-color, black)'}`;
+function shadow(shadowColor = 'var(--shadow-color, black)') {
+  return `2px 2px ${shadowColor}`;
 }
 
 module.exports = {
@@ -144,7 +144,7 @@ module.exports = {
   plugins: {
     '@yuheiy/postcss-custom-functions': {
       functions: {
-        '--negative': (value, ...rest) => negative,
+        '--negative': negative,
       },
     },
   },
@@ -229,5 +229,6 @@ will be processed to:
 }
 
 h1 {
-	font-size: clamp(min(2rem, 4rem), calc(tan(atan2(4rem - 2rem, 1px)) / tan(atan2(var(--breakpoint-xl) - var(--breakpoint-sm), 1px))) * 100lvi + calc(tan(atan2(2rem, 1px)) - calc(tan(atan2(4rem - 2rem, 1px)) / tan(atan2(var(--breakpoint-xl) - var(--breakpoint-sm), 1px))) * tan(atan2(var(--breakpoint-sm), 1px))) / 16 * 1rem, max(2rem, 4rem));}
+  font-size: clamp(min(2rem, 4rem), calc(tan(atan2(4rem - 2rem, 1px)) / tan(atan2(var(--breakpoint-xl) - var(--breakpoint-sm), 1px))) * 100lvi + calc(tan(atan2(2rem, 1px)) - calc(tan(atan2(4rem - 2rem, 1px)) / tan(atan2(var(--breakpoint-xl) - var(--breakpoint-sm), 1px))) * tan(atan2(var(--breakpoint-sm), 1px))) / 16 * 1rem, max(2rem, 4rem));
+}
 ```
