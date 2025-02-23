@@ -1,0 +1,4 @@
+.invalid {
+	margin: --error();
+	margin: --error() --error();
+}

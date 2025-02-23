@@ -19,10 +19,3 @@
 	/* Separated list */
 	--list: 10px, 20px;
 }
-
-.invalid {
-	/* Syntax checking */
-	font-size: --negative(,);
-	font-size: --negative(10px,);
-	font-size: --negative(,10px);
-}

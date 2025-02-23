@@ -19,10 +19,3 @@
 	/* Separated list */
 	--list: --comma-separated-list-of-component-values();
 }
-
-.invalid {
-	/* Syntax checking */
-	font-size: --negative(,);
-	font-size: --negative(10px,);
-	font-size: --negative(,10px);
-}
