@@ -1,6 +1,6 @@
-import postcss from 'postcss';
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import postcss from 'postcss';
 import plugin from '../dist/index.mjs';
 
 test('output errors in custom functions as PostCSS warnings', async () => {
