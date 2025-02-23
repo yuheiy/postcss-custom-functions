@@ -13,5 +13,6 @@ postcssTape(plugin)({
 				'--comma-separated-list-of-component-values': () => '10px, 20px',
 			},
 		},
+		warnings: 3,
 	},
 });

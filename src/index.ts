@@ -80,6 +80,7 @@ const creator: PluginCreator<pluginOptions> = (
 
 						// contains commas without meaningful tokens, such as `--negative(,)`
 						if (nodes.length === 0) {
+							decl.warn(result, 'Syntax error');
 							return componentValue;
 						}
 
