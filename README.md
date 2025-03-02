@@ -184,7 +184,7 @@ function fluid(
 
   return `clamp(${[
     `min(${minSize}, ${maxSize})`,
-    `${slope} * 100lvi + ${intercept} / 16 * 1rem`,
+    `${slope} * 100svw + ${intercept} / 16 * 1rem`,
     `max(${minSize}, ${maxSize})`,
   ].join(', ')})`;
 }
@@ -229,6 +229,6 @@ will be processed to:
 }
 
 h1 {
-  font-size: clamp(min(2rem, 4rem), calc(tan(atan2(4rem - 2rem, 1px)) / tan(atan2(var(--breakpoint-xl) - var(--breakpoint-sm), 1px))) * 100lvi + calc(tan(atan2(2rem, 1px)) - calc(tan(atan2(4rem - 2rem, 1px)) / tan(atan2(var(--breakpoint-xl) - var(--breakpoint-sm), 1px))) * tan(atan2(var(--breakpoint-sm), 1px))) / 16 * 1rem, max(2rem, 4rem));
+  font-size: clamp(min(2rem, 4rem), calc(tan(atan2(4rem - 2rem, 1px)) / tan(atan2(var(--breakpoint-xl) - var(--breakpoint-sm), 1px))) * 100svw + calc(tan(atan2(2rem, 1px)) - calc(tan(atan2(4rem - 2rem, 1px)) / tan(atan2(var(--breakpoint-xl) - var(--breakpoint-sm), 1px))) * tan(atan2(var(--breakpoint-sm), 1px))) / 16 * 1rem, max(2rem, 4rem));
 }
 ```
