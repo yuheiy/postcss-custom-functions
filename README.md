@@ -155,19 +155,23 @@ This implementation is inspired by [Tailwind CSS’s `css-functions.js`](https:/
 
 ### Fluid Typography
 
-You can also implement [Fluid Typography](https://www.smashingmagazine.com/2022/01/modern-fluid-typography-css-clamp/) as a custom function, using the [`tan(atan2())` technique](https://dev.to/janeori/css-type-casting-to-numeric-tanatan2-scalars-582j) to remove px units and calculate them in CSS.
+You can also implement [Fluid Typography](https://www.smashingmagazine.com/2022/01/modern-fluid-typography-css-clamp/) as a custom function.
 
 ```js
+function round(n) {
+  return Math.round((n + Number.EPSILON) * 10000) / 10000;
+}
+
 function fluid(
-  minSize,
-  maxSize,
-  minBreakpoint = 'var(--breakpoint-sm)',
-  maxBreakpoint = 'var(--breakpoint-xl)',
+  min,
+  max,
+  minBreakpoint = '640',
+  maxBreakpoint = '1536',
   ...rest
 ) {
-  if (!minSize || !maxSize) {
+  if (!min || !max) {
     throw new Error(
-      'The --fluid(…) function requires 2–4 arguments, but received none.',
+      'The --fluid(…) function requires at least 2 arguments, but received insufficient arguments.',
     );
   }
 
@@ -179,13 +183,89 @@ function fluid(
     );
   }
 
-  const slope = `calc(tan(atan2(${maxSize} - ${minSize}, 1px)) / tan(atan2(${maxBreakpoint} - ${minBreakpoint}, 1px)))`;
-  const intercept = `calc(tan(atan2(${minSize}, 1px)) - ${slope} * tan(atan2(${minBreakpoint}, 1px)))`;
+  min = Number(min);
+  max = Number(max);
+  minBreakpoint = Number(minBreakpoint);
+  maxBreakpoint = Number(maxBreakpoint);
+
+  const divider = 16;
+  const slope =
+    (max / divider - min / divider) /
+    (maxBreakpoint / divider - minBreakpoint / divider);
+  const intersection = -1 * (minBreakpoint / divider) * slope + min / divider;
 
   return `clamp(${[
-    `min(${minSize}, ${maxSize})`,
-    `${slope} * 100svw + ${intercept} / 16 * 1rem`,
-    `max(${minSize}, ${maxSize})`,
+    `${(min > max ? max : min) / divider}rem`,
+    `${round(intersection)}rem + ${round(slope * 100)}svw`,
+    `${(min > max ? min : max) / divider}rem`,
+  ].join(', ')})`;
+}
+
+module.exports = {
+  plugins: {
+    '@yuheiy/postcss-custom-functions': {
+      functions: {
+        '--fluid': fluid,
+      },
+    },
+  },
+};
+```
+
+Use the custom function you have defined:
+
+```css
+h1 {
+  font-size: --fluid(32, 64);
+}
+```
+
+will be processed to:
+
+```css
+h1 {
+  font-size: clamp(2rem, 0.5714rem + 3.5714svw, 4rem);
+}
+```
+
+Also, by utilizing the [`tan(atan2())` technique](https://dev.to/janeori/css-type-casting-to-numeric-tanatan2-scalars-582j), we can perform calculations in a CSS-native way without requiring JavaScript unit conversions. This means we can combine different units and work with custom properties directly in CSS.
+
+> **Note:** Currently, this technique does not work in Firefox.
+
+```js
+function toPx(length) {
+  return `tan(atan2(${length}, 1px))`;
+}
+
+function fluid(
+  min,
+  max,
+  minBreakpoint = 'var(--breakpoint-sm)',
+  maxBreakpoint = 'var(--breakpoint-2xl)',
+  ...rest
+) {
+  if (!min || !max) {
+    throw new Error(
+      'The --fluid(…) function requires at least 2 arguments, but received insufficient arguments.',
+    );
+  }
+
+  if (rest.length > 0) {
+    throw new Error(
+      `The --fluid(…) function only accepts 4 arguments, but received ${
+        rest.length + 1
+      }.`,
+    );
+  }
+
+  const t = `(${toPx('100svw')} - ${toPx(minBreakpoint)}) / (${toPx(
+    maxBreakpoint,
+  )} - ${toPx(minBreakpoint)})`;
+
+  return `clamp(${[
+    `min(${min}, ${max})`,
+    `${min} + (${max} - ${min}) * ${t}`,
+    `max(${min}, ${max})`,
   ].join(', ')})`;
 }
 
@@ -229,6 +309,12 @@ will be processed to:
 }
 
 h1 {
-  font-size: clamp(min(2rem, 4rem), calc(tan(atan2(4rem - 2rem, 1px)) / tan(atan2(var(--breakpoint-xl) - var(--breakpoint-sm), 1px))) * 100svw + calc(tan(atan2(2rem, 1px)) - calc(tan(atan2(4rem - 2rem, 1px)) / tan(atan2(var(--breakpoint-xl) - var(--breakpoint-sm), 1px))) * tan(atan2(var(--breakpoint-sm), 1px))) / 16 * 1rem, max(2rem, 4rem));
+  font-size: clamp(
+    min(2rem, 4rem),
+    2rem + (4rem - 2rem) *
+      (tan(atan2(100svw, 1px)) - tan(atan2(var(--breakpoint-sm), 1px)))
+        / (tan(atan2(var(--breakpoint-2xl), 1px)) - tan(atan2(var(--breakpoint-sm), 1px))),
+    max(2rem, 4rem)
+  );
 }
 ```
