@@ -158,18 +158,33 @@ This implementation is inspired by [Tailwind CSS’s `css-functions.js`](https:/
 You can also implement [Fluid Typography](https://www.smashingmagazine.com/2022/01/modern-fluid-typography-css-clamp/) as a custom function.
 
 ```js
+const inputPattern = /^([+-]?[0-9]*\.?[0-9]+)(px|rem)$/;
+
+function parseAsRem(input) {
+  const match = input.match(inputPattern);
+
+  if (!match) {
+    throw new Error(`${input} is an invalid input.`);
+  }
+
+  const [, value, unit] = match;
+  const divider = unit === 'px' ? 16 : 1;
+
+  return Number(value) / divider;
+}
+
 function round(n) {
   return Math.round((n + Number.EPSILON) * 10000) / 10000;
 }
 
 function fluid(
-  min,
-  max,
-  minBreakpoint = '640',
-  maxBreakpoint = '1536',
+  minSize,
+  maxSize,
+  minBreakpoint = '40rem',
+  maxBreakpoint = '96rem',
   ...rest
 ) {
-  if (!min || !max) {
+  if (!minSize || !maxSize) {
     throw new Error(
       'The --fluid(…) function requires at least 2 arguments, but received insufficient arguments.',
     );
@@ -183,21 +198,18 @@ function fluid(
     );
   }
 
-  min = Number(min);
-  max = Number(max);
-  minBreakpoint = Number(minBreakpoint);
-  maxBreakpoint = Number(maxBreakpoint);
+  minSize = parseAsRem(minSize);
+  maxSize = parseAsRem(maxSize);
+  minBreakpoint = parseAsRem(minBreakpoint);
+  maxBreakpoint = parseAsRem(maxBreakpoint);
 
-  const divider = 16;
-  const slope =
-    (max / divider - min / divider) /
-    (maxBreakpoint / divider - minBreakpoint / divider);
-  const intersection = -1 * (minBreakpoint / divider) * slope + min / divider;
+  const slope = (maxSize - minSize) / (maxBreakpoint - minBreakpoint);
+  const intersection = -1 * minBreakpoint * slope + minSize;
 
   return `clamp(${[
-    `${(min > max ? max : min) / divider}rem`,
+    `${minSize > maxSize ? maxSize : minSize}rem`,
     `${round(intersection)}rem + ${round(slope * 100)}svw`,
-    `${(min > max ? min : max) / divider}rem`,
+    `${minSize > maxSize ? minSize : maxSize}rem`,
   ].join(', ')})`;
 }
 
@@ -216,7 +228,7 @@ Use the custom function you have defined:
 
 ```css
 h1 {
-  font-size: --fluid(32, 64);
+  font-size: --fluid(2rem, 4rem);
 }
 ```
 
@@ -238,13 +250,13 @@ function toPx(length) {
 }
 
 function fluid(
-  min,
-  max,
+  minSize,
+  maxSize,
   minBreakpoint = 'var(--breakpoint-sm)',
   maxBreakpoint = 'var(--breakpoint-2xl)',
   ...rest
 ) {
-  if (!min || !max) {
+  if (!minSize || !maxSize) {
     throw new Error(
       'The --fluid(…) function requires at least 2 arguments, but received insufficient arguments.',
     );
@@ -258,14 +270,14 @@ function fluid(
     );
   }
 
-  const t = `(${toPx('100svw')} - ${toPx(minBreakpoint)}) / (${toPx(
-    maxBreakpoint,
-  )} - ${toPx(minBreakpoint)})`;
+  const t =
+    `(${toPx('100svw')} - ${toPx(minBreakpoint)})` +
+    ` / (${toPx(maxBreakpoint)} - ${toPx(minBreakpoint)})`;
 
   return `clamp(${[
-    `min(${min}, ${max})`,
-    `${min} + (${max} - ${min}) * ${t}`,
-    `max(${min}, ${max})`,
+    `min(${minSize}, ${maxSize})`,
+    `${minSize} + (${maxSize} - ${minSize}) * ${t}`,
+    `max(${minSize}, ${maxSize})`,
   ].join(', ')})`;
 }
 
